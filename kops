@@ -1,0 +1,70 @@
+managed k8s setup
+============
+1.EKS(AWS)
+2.AKS(Azure)
+3. GKE(GCP)
+
+unmanaged/self managed k8s setup
+===================
+1.KOPS(kubernetes operations)
+2.Kubeadm
+3.Minikube
+
+Gem/kops server(t2.micro)
+create IAM(identity access management)-roles-attach ec2  and adminstritative access
+
+install kops
+install kubectl
+create a s3 bucket
+rds-hosted zone
+
+kops
+
+curl -LO https://github.com/kubernetes/kops/releases/download/$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | grep tag_name | cut -d '"' -f 4)/kops-linux-amd64
+
+chmod +x kops-linux-amd64
+
+sudo mv kops-linux-amd64 /usr/local/bin/kops
+======================================
+kubectl
+
+curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+
+chmod +x ./kubectl
+
+sudo mv ./kubectl /usr/local/bin/kubectl
+=======================================
+s3 bucket
+aws s3 mb s3://niikhil.in.k8s --region ap-south-1
+=============================================
+route53-niikhil.in
+DNS:domain name into ipaddress
+===============================
+edit the file by adding below 2 lines to  .bashrc
+export KOPS_CLUSTER_NAME=niikhil.in
+export KOPS_STATE_STORE=s3://niikhil.in.k8s
+========================================
+ source .bashrc
+---------------------------
+kops create cluster \
+--state=${KOPS_STATE_STORE} \
+--node-count=2 \
+--master-size=t3.medium \
+--node-size=t3.medium \
+--zones=ap-south-1a \
+--name=${KOPS_CLUSTER_NAME} \
+--dns private \
+--master-count=1
+---------------------------------------
+update the cluster
+kops update cluster --yes --admin
+
+to check status
+kops validate cluster
+
+to delete  cluster
+kops delete cluster --yes
+or
+to delete the nodes go to
+auto scaling groups
+
